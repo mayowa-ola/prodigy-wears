@@ -13,7 +13,37 @@ const config = {
     measurementId: "G-H1MQ8406GS"
 };
 
+
 firebase.initializeApp(config);
+
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+    
+    if(!userAuth) return;
+
+    const userRef = firestore.doc(`users/${userAuth.uid}`);
+
+    const snapShot = await userRef.get();
+    console.log(snapShot);
+
+    //checking if the user data exits in the database
+    if(!snapShot.exists){
+        const {displayName, email} = userAuth;
+        const createdAt = new Date();
+        //if user does not exits, we create the user into the firebase database
+        try {
+            await userRef.set({
+                displayName,
+                email,
+                createdAt,
+                ...additionalData
+            })
+        }
+        catch(ex){
+            console.log('error creating user', ex.message)
+        }
+    }
+return userRef;
+}
 
 export const auth = firebase.auth(); //setting up authetication
 
