@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import HomePage from './pages/homepage/homepage.component';
 import {connect} from 'react-redux';
-import {Switch, Route} from 'react-router-dom'; 
+import {Switch, Route, Redirect} from 'react-router-dom'; 
 import ShopPage from './pages/shoppage/shop.component';
 import Header from './components/header/header.components'
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up-page/sign-in-and-sign-up-page';
@@ -45,7 +45,7 @@ class App extends Component {
         <div>
           <Header/>
           <Switch>
-            <Route path="/signin" component= {SignInAndSignUpPage}/>
+            <Route path="/signin" render={()=>this.props.currentUser ? (<Redirect to='/' />) : (<SignInAndSignUpPage/>)}/>
             <Route path="/shop" component= {ShopPage}/>
             <Route path="/" component= {HomePage}/>
           </Switch>
@@ -53,10 +53,16 @@ class App extends Component {
       );
     }
 }
+
+const mapStateToProps = ({user}) => ({
+  currentUser: user.currentUser
+})
+
 const mapDispatchToProps = dispatch => ({
  setCurrentUser: user =>dispatch(setCurrentUser(user))
 })
-export default connect(null, mapDispatchToProps)(App);
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 
 
